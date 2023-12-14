@@ -6,7 +6,8 @@ const userSchema = new Schema({
     type: String,
     unique: true
   },
-  password: String
+  password: String,
+  required: true
 });
 
 const User = model("User", userSchema);

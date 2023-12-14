@@ -1,0 +1,22 @@
+<h1>Signup page</h1>
+<h2>Please enter a username and password to sign up.</h2>
+
+<div id="signup-form">
+    <h2>Signup</h2>
+    <form action="/signup" method="post">
+    
+        <label> Username
+            <input type="text" name="username" placeholder="daveChappelle" />
+        </label>
+
+        <label> Password
+            <input type="text" name="password" placeholder="********" />
+        </label>
+
+        <button type="sumbit">Sign up!</button>
+
+        {{#if errorMessage}}
+            <p style="color: red;">{{errorMessage}}</p>
+        {{/if}}
+    </form>
+</div>
