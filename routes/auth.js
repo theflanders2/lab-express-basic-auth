@@ -14,13 +14,22 @@ router.get("/signup", (req, res, next) => {
 router.post("/signup", (req, res, next) => {
     const { username, password } = req.body;
 
-    bcrypt.hash(password, saltRounds) //use to encrypt password
-        .then((hash) => {
-            console.log('hash', hash)
-            return User.create({ username, password: hash})
-        })
-        .then(user => {
-            res.redirect('/profile')
+    User.findOne({username})
+        .then(foundUser => {
+            if(foundUser){
+                // send an error notification
+                res.render("auth/signup", { errorMessage: "Username exists"})
+            }
+            else{
+                bcrypt.hash(password, saltRounds) //use to encrypt password
+                    .then((hash) => {
+                        console.log('hash', hash)
+                        return User.create({ username, password: hash})
+                    })
+                    .then(user => {
+                        res.redirect('/profile')
+                    })
+            }
         })
         .catch(err => console.log(err))
 });
