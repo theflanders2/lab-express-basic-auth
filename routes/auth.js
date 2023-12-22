@@ -4,14 +4,17 @@ const express = require('express');
 const router = express.Router();
 
 const User = require("../models/User.model");
+// require auth middleware
+const { isLoggedIn, isLoggedOut } = require('../middleware/route-guard.js');
 
 // GET Signup page 
-router.get("/signup", (req, res, next) => {
+router.get("/signup", isLoggedOut, (req, res, next) => {
+    console.log("req.session Signup", req.session)
     res.render("auth/signup")
 });
 
 //POST Signup
-router.post("/signup", (req, res, next) => {
+router.post("/signup", isLoggedOut, (req, res, next) => {
     const { username, password } = req.body;
 
     User.findOne({ username }) //check to see if user already exists
@@ -64,12 +67,12 @@ router.post("/signup", (req, res, next) => {
 });
 
 // GET route to display the login form to users
-router.get('/login', (req, res) => {
+router.get('/login', isLoggedOut, (req, res) => {
     res.render('auth/login')
 });
 
 // POST login route ==> to process form data
-router.post('/login', (req, res, next) => {
+router.post('/login', isLoggedOut, (req, res, next) => {
     console.log('SESSION =====> ', req.session);
     const { username, password } = req.body;
 
@@ -104,18 +107,30 @@ router.post('/login', (req, res, next) => {
     });
 });
 
-//GET the profile page
-router.get("/profile", (req, res, next) => {
-    res.render("user/profile", { userInSession: req.session.currentUser });
-});
-
 //POST to log the user out
-router.post('/logout', (req, res, next) => {
+router.post('/logout', isLoggedIn, (req, res, next) => {
     req.session.destroy(err => {
       if (err) next(err);
       console.log('The user has successfully logged out.')
       res.redirect('/');
     });
   });
+
+  //GET the profile page
+router.get("/profile", isLoggedIn, (req, res, next) => {
+    res.render("user/profile", { userInSession: req.session.currentUser });
+});
+
+// GET main route 
+router.get("/main", isLoggedIn, (req, res, next) => {
+    console.log("req.session Main", req.session)
+    res.render("user/main")
+});
+
+// GET private route 
+router.get("/private", isLoggedIn, (req, res, next) => {
+    console.log("req.session Private", req.session)
+    res.render("user/private")
+});
 
 module.exports = router;
